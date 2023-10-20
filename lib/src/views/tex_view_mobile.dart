@@ -18,6 +18,41 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
     super.build(context);
     updateKeepAlive();
     _initTeXView();
+
+    var channels = <JavascriptChannel>{};
+    channels.add(
+      JavascriptChannel(
+          name: 'TeXViewRenderedCallback',
+          onMessageReceived: (jm) async {
+            double height = double.parse(jm.message);
+            if (_height != height) {
+              setState(() {
+                _height = height;
+              });
+            }
+            widget.onRenderFinished?.call(height);
+          }),
+    );
+
+    channels.add(
+      JavascriptChannel(
+          name: 'OnTapCallback',
+          onMessageReceived: (jm) {
+            widget.child.onTapCallback(jm.message);
+          }),
+    );
+
+    widget.jsChannels?.forEach((key, value) {
+      channels.add(
+        JavascriptChannel(
+          name: key,
+          onMessageReceived: (jm) async {
+            value.call(jm.message);
+          },
+        ),
+      );
+    });
+
     return IndexedStack(
       index: widget.loadingWidgetBuilder?.call(context) != null
           ? _height == minHeight
@@ -40,24 +75,7 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
             initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
             backgroundColor: Colors.transparent,
             allowsInlineMediaPlayback: true,
-            javascriptChannels: {
-              JavascriptChannel(
-                  name: 'TeXViewRenderedCallback',
-                  onMessageReceived: (jm) async {
-                    double height = double.parse(jm.message);
-                    if (_height != height) {
-                      setState(() {
-                        _height = height;
-                      });
-                    }
-                    widget.onRenderFinished?.call(height);
-                  }),
-              JavascriptChannel(
-                  name: 'OnTapCallback',
-                  onMessageReceived: (jm) {
-                    widget.child.onTapCallback(jm.message);
-                  })
-            },
+            javascriptChannels: channels,
             javascriptMode: JavascriptMode.unrestricted,
           ),
         ),

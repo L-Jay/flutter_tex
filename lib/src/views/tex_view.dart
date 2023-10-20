@@ -26,6 +26,8 @@ class TeXView extends StatefulWidget {
   /// Callback when TEX rendering finishes.
   final Function(double height)? onRenderFinished;
 
+  final Map<String, Function(String)>? jsChannels;
+
   const TeXView({
     Key? key,
     required this.child,
@@ -35,6 +37,7 @@ class TeXView extends StatefulWidget {
     this.loadingWidgetBuilder,
     this.onRenderFinished,
     this.renderingEngine,
+    this.jsChannels,
   }) : super(key: key);
 
   @override
