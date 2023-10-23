@@ -26,21 +26,24 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
           onMessageReceived: (jm) async {
             double height = double.parse(jm.message);
             if (_height != height) {
-              setState(() {
-                _height = height;
-              });
+              _height = height;
+              if (mounted) {
+                setState(() {
+
+                });
+              }
             }
             widget.onRenderFinished?.call(height);
           }),
     );
 
-    // channels.add(
-    //   JavascriptChannel(
-    //       name: 'OnTapCallback',
-    //       onMessageReceived: (jm) {
-    //         widget.child.onTapCallback(jm.message);
-    //       }),
-    // );
+    channels.add(
+      JavascriptChannel(
+          name: 'OnTapCallback',
+          onMessageReceived: (jm) {
+            widget.child.onTapCallback(jm.message);
+          }),
+    );
 
     widget.jsChannels?.forEach((key, value) {
       channels.add(
