@@ -34,13 +34,13 @@ class TeXViewState extends State<TeXView> with AutomaticKeepAliveClientMixin {
           }),
     );
 
-    channels.add(
-      JavascriptChannel(
-          name: 'OnTapCallback',
-          onMessageReceived: (jm) {
-            widget.child.onTapCallback(jm.message);
-          }),
-    );
+    // channels.add(
+    //   JavascriptChannel(
+    //       name: 'OnTapCallback',
+    //       onMessageReceived: (jm) {
+    //         widget.child.onTapCallback(jm.message);
+    //       }),
+    // );
 
     widget.jsChannels?.forEach((key, value) {
       channels.add(
